@@ -1,0 +1,92 @@
+
+.glitch-btn {
+    position: relative;
+    padding: 15px 30px;
+    border: 2px solid #00f0ff;
+    color: #00f0ff;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    overflow: hidden;
+    background: transparent;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Courier New', monospace;
+}
+
+.glitch-btn:before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        120deg, 
+        transparent, 
+        rgba(0, 240, 255, 0.4), 
+        transparent
+    );
+    transition: all 0.5s;
+}
+
+.glitch-btn:hover:before {
+    left: 100%;
+}
+
+.glitch-btn:hover {
+    background: #00f0ff;
+    color: #0a0a1a;
+    box-shadow: 0 0 20px #00f0ff, 0 0 40px #00f0ff, 0 0 80px #00f0ff;
+}
+
+.glitch-btn:active {
+    transform: scale(0.95);
+}
+
+/* Glitch Text Effect */
+.glitch-btn span {
+    position: relative;
+    z-index: 1;
+}
+
+.glitch-btn:before,
+.glitch-btn:after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.glitch-btn:before {
+    left: 2px;
+    text-shadow: -2px 0 red;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim 5s infinite linear alternate-reverse;
+}
+
+.glitch-btn:after {
+    left: -2px;
+    text-shadow: -2px 0 blue;
+    clip: rect(44px, 450px, 56px, 0);
+    animation: glitch-anim2 5s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim {
+    0% {
+        clip: rect(14px, 9999px, 79px, 0);
+    }
+    100% {
+        clip: rect(85px, 9999px, 140px, 0);
+    }
+}
+
+@keyframes glitch-anim2 {
+    0% {
+        clip: rect(34px, 9999px, 99px, 0);
+    }
+    100% {
+        clip: rect(67px, 9999px, 116px, 0);
+    }
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>File Encryption and Decryption</title>
+    <style>
+        :root {
+            --neon-blue: #00f0ff;
+            --neon-pink: #ff00bf;
+            --dark-bg: #0a0a1a;
+            --grid-color: rgba(0, 240, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--neon-blue);
+            font-family: 'Courier New', monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            background: rgba(10, 10, 26, 0.9);
+            border: 2px solid var(--neon-blue);
+            padding: 40px;
+            width: 500px;
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.4);
+            position: relative;
+            z-index: 1;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(0deg, transparent 24%, var(--grid-color) 25%, var(--grid-color) 26%, transparent 27%, transparent 74%, var(--grid-color) 75%, var(--grid-color) 76%, transparent 77%, transparent),
+                linear-gradient(90deg, transparent 24%, var(--grid-color) 25%, var(--grid-color) 26%, transparent 27%, transparent 74%, var(--grid-color) 75%, var(--grid-color) 76%, transparent 77%, transparent);
+            background-size: 50px 50px;
+            z-index: -1;
+            opacity: 0.3;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--neon-pink);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px var(--neon-pink);
+            margin-bottom: 30px;
+        }
+
+        .file-input-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-input-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            padding: 15px;
+            border: 2px dashed var(--neon-blue);
+            background: rgba(0, 240, 255, 0.1);
+            color: var(--neon-blue);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .file-input-label:hover {
+            background: rgba(0, 240, 255, 0.2);
+            border-color: var(--neon-pink);
+        }
+
+        .file-input-label::before {
+            content: 'Choose File';
+            margin-right: 10px;
+        }
+
+        .file-input-label:hover::before {
+            content: 'Select File';
+        }
+
+        .file-input:valid + .file-input-label::before {
+            content: attr(data-file-name);
+            color: var(--neon-pink);
+        }
+
+        .glitch-btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-blue);
+            background: transparent;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+
+        .glitch-btn:hover {
+            background: var(--neon-blue);
+            color: var(--dark-bg);
+            box-shadow: 0 0 20px var(--neon-blue);
+        }
+
+        .glitch-btn:active {
+            transform: scale(0.95);
+        }
+
+        .message {
+            text-align: center;
+            padding: 10px;
+            margin-top: 20px;
+            background: rgba(0, 240, 255, 0.2);
+            border: 2px solid var(--neon-blue);
+            color: var(--neon-pink);
+            display: none;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .message.success {
+            background-color: rgba(0, 255, 0, 0.2);
+            border-color: rgba(0, 255, 0, 0.8);
+            color: #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>File Encryption and Decryption</h1>
+        
+        <!-- Encrypt Form -->
+        <form action="/encrypt" method="POST" enctype="multipart/form-data">
+            <div class="file-input-container">
+                <input type="file" name="encrypt-file" class="file-input" id="encrypt-file" required 
+                       onchange="this.nextElementSibling.setAttribute('data-file-name', this.files[0].name)">
+                <label for="encrypt-file" class="file-input-label"></label>
+            </div>
+            <button class="glitch-btn" type="submit">Encrypt</button>
+        </form>
+
+        <!-- Decrypt Form -->
+        <form action="/decrypt" method="POST" enctype="multipart/form-data">
+            <div class="file-input-container">
+                <input type="file" name="decrypt-file" class="file-input" id="decrypt-file" required 
+                       onchange="this.nextElementSibling.setAttribute('data-file-name', this.files[0].name)">
+                <label for="decrypt-file" class="file-input-label"></label>
+            </div>
+            <button class="glitch-btn" type="submit">Decrypt</button>
+        </form>
+
+        <form action="/generate_key" method="POST" onsubmit="showSuccessMessage(event)">
+            <button id="generate-key" class="glitch-btn" type="submit">Generate Key</button>
+        </form>
+
+        <form action="/download_key" method="GET">
+            <button id="download-key" class="glitch-btn" type="submit">Download Key</button>
+        </form>
+
+        <div id="message" class="message">
+            Key Generated Successfully!
+        </div>
+    </div>
+
+    <script>
+        function showSuccessMessage(event) {
+            event.preventDefault();
+            document.getElementById('message').classList.add('success');
+            document.getElementById('message').style.display = 'block';
+        }
+    </script>
+</body>
+</html>
